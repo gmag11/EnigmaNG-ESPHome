@@ -86,6 +86,9 @@ async def to_code(config):
 
     cg.add_define("USE_ENIGMANG")
 
+    # WiFi is a bundled Arduino ESP32 framework library needed by MeshNetwork.h
+    # It is not pulled in automatically because we CONFLICT with the wifi component.
+    cg.add_library("WiFi", None)
     # EnigmaNG is not in the PlatformIO registry — declare git dependencies
     cg.add_library("QuickESPNow", None, "https://github.com/gmag11/QuickESPNow.git")
     cg.add_library("EnigmaNG", None, "https://github.com/gmag11/EnigmaNG.git")
