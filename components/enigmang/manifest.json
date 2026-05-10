@@ -1,0 +1,10 @@
+{
+  "name": "enigmang",
+  "version": "0.1.0",
+  "description": "EnigmaNG mesh network transport for ESPHome",
+  "author": "gmag11",
+  "license": "MIT",
+  "url": "https://github.com/gmag11/EnigmaNG-ESPHome",
+  "esphome_version": ">=2024.6.0",
+  "target_platform": ["esp32"]
+}

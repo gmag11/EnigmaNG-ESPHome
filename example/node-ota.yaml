@@ -1,0 +1,48 @@
+# EnigmaNG ESPHome Node — OTA via HTTP Example
+#
+# Demonstrates Over-The-Air updates via HTTP outbound.
+# Standard ESPHome OTA (port 3232) requires inbound TCP which is
+# blocked by the EnigmaNG gateway NAT. Instead, the node pulls
+# firmware updates from an HTTP server on the LAN.
+#
+# To serve the firmware:
+#   1. Compile the firmware: esphome compile node-ota.yaml
+#   2. Copy .pioenvs/node-ota/firmware.bin to your HA's www/ folder
+#   3. The node will check for updates periodically
+
+esphome:
+  name: node-ota
+  friendly_name: OTA Test Node
+
+esp32:
+  board: esp32dev
+
+external_components:
+  - source: github://gmag11/EnigmaNG-ESPHome
+    components: [enigmang, network]
+
+enigmang:
+  psk: !secret enigmang_psk
+
+mqtt:
+  broker: 192.168.1.100
+  port: 1883
+  username: !secret mqtt_user
+  password: !secret mqtt_password
+  discovery: true
+
+# HTTP OTA: node pulls firmware from a LAN HTTP server (outbound only)
+http_request:
+
+update:
+  - platform: http_request
+    name: "Firmware Update"
+    source: http://192.168.1.100:8123/local/firmware/node-ota.bin
+    update_interval: 6h
+
+sensor:
+  - platform: uptime
+    name: "Uptime"
+
+logger:
+  level: INFO

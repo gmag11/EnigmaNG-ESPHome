@@ -1,0 +1,40 @@
+# EnigmaNG ESPHome Node — Hostname Broker Example
+#
+# Same as node-basic but using a hostname for the MQTT broker.
+# IMPORTANT: Requires the EnigmaNG dns-proxy-cache feature to be active
+# on the gateway. Without it, hostname resolution will fail silently
+# and the node will not connect to the broker.
+
+esphome:
+  name: sensor-garage
+  friendly_name: Garage Sensor
+
+esp32:
+  board: esp32dev
+
+external_components:
+  - source: github://gmag11/EnigmaNG-ESPHome
+    components: [enigmang, network]
+
+enigmang:
+  psk: !secret enigmang_psk
+
+mqtt:
+  broker: homeassistant.local  # Requires dns-proxy-cache on gateway
+  port: 1883
+  username: !secret mqtt_user
+  password: !secret mqtt_password
+  discovery: true
+
+sensor:
+  - platform: dht
+    pin: GPIO4
+    model: DHT22
+    temperature:
+      name: "Garage Temperature"
+    humidity:
+      name: "Garage Humidity"
+    update_interval: 60s
+
+logger:
+  level: INFO

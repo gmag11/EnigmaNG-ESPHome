@@ -103,8 +103,25 @@ The integration point is therefore clean and non-invasive: the EnigmaNG componen
 **[Risk] Deep sleep + mesh reconnection time may cause missed MQTT messages**
 → EnigmaNG stores up to 3 Parent candidates in NVS (§7.5 of spec) for fast reconnection. Documented as a known trade-off of battery mode.
 
+### D7: Override ESPHome `network` component to integrate with `network::is_connected()`
+
+**Decision:** Ship a patched copy of ESPHome's `network` component (`components/network/`) alongside the `enigmang` component. The patched version adds `#ifdef USE_ENIGMANG` blocks to `util.h` and `util.cpp`, enabling `network::is_connected()`, `get_ip_addresses()`, and `get_use_address()` to recognize EnigmaNG as a network provider.
+
+Users include both components via `external_components:`:
+```yaml
+external_components:
+  - source: github://gmag11/EnigmaNG-ESPHome
+    components: [enigmang, network]
+```
+
+**Rationale:** ESPHome has no pluggable network provider API. The `network::is_connected()` function uses a compile-time `#ifdef` chain that only knows about WiFi, Ethernet, Modem, and OpenThread. Without this patch, MQTT and all other network-dependent components would never detect connectivity. The `network` component is small (~100 lines of logic in `util.h`/`util.cpp`) and changes infrequently in ESPHome upstream.
+
+**Alternative considered:** Impersonating the Ethernet component by defining `USE_ETHERNET` and providing a `global_eth_component` pointer. Rejected because it's fragile, couples to `EthernetComponent`'s internal API, and blocks real Ethernet use.
+
+**Maintenance:** The patched `network` component must be kept in sync with ESPHome upstream. Version pinning in `manifest.json` and CI checks can detect drift.
+
 ## Open Questions
 
-- **OQ1:** Does the ESPHome `WiFiInterface` registration API change significantly between ESPHome 2024.x and 2025.x? Research needed before implementation.
+- ~~**OQ1:** Does the ESPHome `WiFiInterface` registration API change significantly between ESPHome 2024.x and 2025.x?~~ **RESOLVED**: There is no such API. ESPHome uses hardcoded `#ifdef` chains. Decision D7 addresses this.
 - **OQ2:** Should the component expose `getGatewayIP()` and `getNodeCount()` as ESPHome template sensors? Useful for diagnostics but adds schema complexity.
 - **OQ3:** Should `relay_enabled` default to `true` for `mode: node` or be explicit? Defaulting to `true` makes nodes relay-capable by default, which is the correct mesh behavior but may surprise users.

@@ -1,0 +1,51 @@
+# EnigmaNG ESPHome Node — Battery Mode Example
+#
+# Deep sleep node that wakes, publishes sensor data, and sleeps.
+# Uses EnigmaNG MESH_BATTERY mode (no relay, NVS parent caching).
+# ESPHome's deep_sleep component controls the sleep cycle.
+
+esphome:
+  name: sensor-outdoor
+  friendly_name: Outdoor Sensor
+
+esp32:
+  board: esp32dev
+
+external_components:
+  - source: github://gmag11/EnigmaNG-ESPHome
+    components: [enigmang, network]
+
+enigmang:
+  psk: !secret enigmang_psk
+  mode: battery
+  sleep_duration: 60s
+
+mqtt:
+  broker: 192.168.1.100
+  port: 1883
+  username: !secret mqtt_user
+  password: !secret mqtt_password
+  discovery: true
+
+deep_sleep:
+  run_duration: 15s
+  sleep_duration: 60s
+
+sensor:
+  - platform: adc
+    pin: GPIO34
+    name: "Outdoor Battery Voltage"
+    attenuation: 11db
+    update_interval: never  # Only read on wake
+
+  - platform: dht
+    pin: GPIO4
+    model: DHT22
+    temperature:
+      name: "Outdoor Temperature"
+    humidity:
+      name: "Outdoor Humidity"
+    update_interval: never  # Only read on wake
+
+logger:
+  level: INFO

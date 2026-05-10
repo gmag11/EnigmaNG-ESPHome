@@ -1,0 +1,47 @@
+# EnigmaNG ESPHome Node — Basic Example
+#
+# Minimal configuration: mesh node with MQTT publishing a DHT sensor.
+# The broker address is an IP — no DNS resolution needed.
+
+esphome:
+  name: sensor-kitchen
+  friendly_name: Kitchen Sensor
+
+esp32:
+  board: esp32dev
+
+external_components:
+  - source: github://gmag11/EnigmaNG-ESPHome
+    components: [enigmang, network]
+
+enigmang:
+  psk: !secret enigmang_psk
+
+mqtt:
+  broker: 192.168.1.100
+  port: 1883
+  username: !secret mqtt_user
+  password: !secret mqtt_password
+  discovery: true
+
+sensor:
+  - platform: dht
+    pin: GPIO4
+    model: DHT22
+    temperature:
+      name: "Kitchen Temperature"
+    humidity:
+      name: "Kitchen Humidity"
+    update_interval: 30s
+
+  # Optional: mesh RSSI diagnostic sensor
+  - platform: enigmang
+    name: "Kitchen Mesh RSSI"
+
+binary_sensor:
+  # Optional: mesh connectivity diagnostic
+  - platform: enigmang
+    name: "Kitchen Mesh Connected"
+
+logger:
+  level: INFO

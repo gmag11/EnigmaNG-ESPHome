@@ -1,0 +1,3 @@
+[submodule "lib/EnigmaNG"]
+	path = lib/EnigmaNG
+	url = https://github.com/gmag11/EnigmaNG
