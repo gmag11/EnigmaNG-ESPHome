@@ -9,6 +9,7 @@ from esphome.const import (
     CONF_CHANNEL,
 )
 from esphome.core import coroutine_with_priority, CoroPriority
+from esphome.components.esp32 import add_idf_sdkconfig_option
 
 
 def _validate_ipv4(value):
@@ -85,6 +86,12 @@ async def to_code(config):
     await cg.register_component(var, config)
 
     cg.add_define("USE_ENIGMANG")
+
+    # Required sdkconfig options for EnigmaNG:
+    # - DHCPS: used by Arduino NetworkInterface (esp_netif_dhcps_*)
+    # - HKDF: used by Crypto::hkdf (mbedtls_hkdf)
+    add_idf_sdkconfig_option("CONFIG_LWIP_DHCPS", True)
+    add_idf_sdkconfig_option("CONFIG_MBEDTLS_HKDF_C", True)
 
     # WiFi is a bundled Arduino ESP32 framework library needed by MeshNetwork.h
     # It is not pulled in automatically because we CONFLICT with the wifi component.
