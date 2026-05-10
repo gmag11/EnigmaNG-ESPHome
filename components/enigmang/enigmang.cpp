@@ -95,7 +95,7 @@ bool EnigmaNGComponent::is_connected() { return mesh_->isConnected(); }
 network::IPAddresses EnigmaNGComponent::get_ip_addresses() {
   network::IPAddresses addresses{};
   if (mesh_->isConnected()) {
-    addresses[0] = network::IPAddress(&mesh_->getLocalIP());
+    addresses[0] = network::IPAddress(mesh_->getLocalIP());
   }
   return addresses;
 }
@@ -104,7 +104,7 @@ network::IPAddress EnigmaNGComponent::get_dns_address(uint8_t num) {
   // DNS is provided by the gateway's dns-proxy-cache if available
   // Return the gateway IP as DNS server (standard for mesh nodes)
   if (num == 0 && mesh_->isConnected()) {
-    return network::IPAddress(&mesh_->getGatewayIP());
+    return network::IPAddress(mesh_->getGatewayIP());
   }
   return {};
 }
