@@ -1,5 +1,7 @@
 """EnigmaNG mesh network component for ESPHome."""
 
+import ipaddress
+
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.const import (
@@ -7,6 +9,15 @@ from esphome.const import (
     CONF_CHANNEL,
 )
 from esphome.core import coroutine_with_priority, CoroPriority
+
+
+def _validate_ipv4(value):
+    """Validate and return an IPv4 address string."""
+    try:
+        ipaddress.IPv4Address(value)
+    except ValueError as e:
+        raise cv.Invalid(f"Invalid IPv4 address: {value}") from e
+    return str(value)
 
 CODEOWNERS = ["@gmag11"]
 DEPENDENCIES = []
@@ -35,8 +46,8 @@ CONF_SLEEP_DURATION = "sleep_duration"
 
 STATIC_IP_SCHEMA = cv.Schema(
     {
-        cv.Required(CONF_IP): cv.ipv4,
-        cv.Optional(CONF_GATEWAY): cv.ipv4,
+        cv.Required(CONF_IP): _validate_ipv4,
+        cv.Optional(CONF_GATEWAY): _validate_ipv4,
     }
 )
 
@@ -85,10 +96,11 @@ async def to_code(config):
 
     if CONF_STATIC_IP in config:
         static_ip = config[CONF_STATIC_IP]
-        ip = static_ip[CONF_IP]
-        cg.add(var.set_static_ip(int(ip)))
+        ip_int = int(ipaddress.IPv4Address(static_ip[CONF_IP]))
+        cg.add(var.set_static_ip(ip_int))
         if CONF_GATEWAY in static_ip:
-            cg.add(var.set_gateway_ip(int(static_ip[CONF_GATEWAY])))
+            gw_int = int(ipaddress.IPv4Address(static_ip[CONF_GATEWAY]))
+            cg.add(var.set_gateway_ip(gw_int))
 
     if CONF_SLEEP_DURATION in config:
         cg.add(var.set_sleep_duration(config[CONF_SLEEP_DURATION].total_seconds))
