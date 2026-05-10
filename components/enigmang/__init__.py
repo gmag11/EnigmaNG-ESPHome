@@ -86,6 +86,10 @@ async def to_code(config):
 
     cg.add_define("USE_ENIGMANG")
 
+    # EnigmaNG is not in the PlatformIO registry — declare git dependencies
+    cg.add_library("QuickESPNow", None, "https://github.com/gmag11/QuickESPNow.git")
+    cg.add_library("EnigmaNG", None, "https://github.com/gmag11/EnigmaNG.git")
+
     cg.add(var.set_psk(config[CONF_PSK]))
     cg.add(var.set_mode(config[CONF_MODE]))
     cg.add(var.set_channel(config[CONF_CHANNEL]))
