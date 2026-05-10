@@ -2,7 +2,10 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/network/ip_address.h"
-#include <MeshNetwork.h>
+
+// Forward declaration — full include is in enigmang.cpp to avoid pulling
+// Arduino WiFi headers into every file that includes enigmang.h
+class MeshNetwork;
 
 namespace esphome {
 namespace enigmang {
@@ -45,7 +48,7 @@ class EnigmaNGComponent : public Component {
   int8_t get_rssi_from_gateway();
 
  protected:
-  MeshNetwork mesh_;
+  MeshNetwork *mesh_{nullptr};
 
   const char *psk_{nullptr};
   EnigmaNGMode mode_{EnigmaNGMode::NODE};
