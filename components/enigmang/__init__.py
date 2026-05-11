@@ -87,9 +87,10 @@ async def to_code(config):
 
     cg.add_define("USE_ENIGMANG")
 
-    # Required sdkconfig options for EnigmaNG:
+    # Required sdkconfig options for EnigmaNG (ESP-IDF only):
     # - HKDF: used by Crypto::hkdf (mbedtls_hkdf)
-    add_idf_sdkconfig_option("CONFIG_MBEDTLS_HKDF_C", True)
+    if CORE.using_esp_idf:
+        add_idf_sdkconfig_option("CONFIG_MBEDTLS_HKDF_C", True)
 
     # Note: CONFIG_LWIP_DHCPS must be kept enabled via esp32.framework.advanced.
     # enable_lwip_dhcp_server: true in the user YAML. The Arduino WiFi library
