@@ -8,7 +8,7 @@ from esphome.const import (
     CONF_ID,
     CONF_CHANNEL,
 )
-from esphome.core import coroutine_with_priority
+from esphome.core import CORE, coroutine_with_priority
 from esphome.components.esp32 import add_idf_sdkconfig_option
 
 
