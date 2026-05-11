@@ -8,7 +8,7 @@ from esphome.const import (
     CONF_ID,
     CONF_CHANNEL,
 )
-from esphome.core import coroutine_with_priority, CoroPriority
+from esphome.core import coroutine_with_priority
 from esphome.components.esp32 import add_idf_sdkconfig_option
 
 
@@ -80,7 +80,7 @@ CONFIG_SCHEMA = cv.All(
 )
 
 
-@coroutine_with_priority(CoroPriority.COMMUNICATION)
+@coroutine_with_priority(600.0)
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)

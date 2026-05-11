@@ -11,7 +11,7 @@ esp32:
   board: esp32dev
 
 external_components:
-  - source: github://gmag11/EnigmaNG-ESPHome
+  - source: github://gmag11/EnigmaNG-ESPHome@main
     components: [enigmang, network]
 
 enigmang:
@@ -25,15 +25,6 @@ mqtt:
   discovery: true
 
 sensor:
-  - platform: dht
-    pin: GPIO4
-    model: DHT22
-    temperature:
-      name: "Kitchen Temperature"
-    humidity:
-      name: "Kitchen Humidity"
-    update_interval: 30s
-
   # Optional: mesh RSSI diagnostic sensor
   - platform: enigmang
     name: "Kitchen Mesh RSSI"
