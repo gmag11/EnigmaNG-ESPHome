@@ -103,6 +103,12 @@ async def to_code(config):
     cg.add_library("QuickESPNow", None, "https://github.com/gmag11/QuickESPNow.git")
     cg.add_library("EnigmaNG", None, "https://github.com/gmag11/EnigmaNG.git")
 
+    # Arduino framework: MeshNetwork.h includes <WiFiClient.h> which lives in
+    # the ESP32 Arduino WiFi library directory. PlatformIO does not auto-add
+    # that directory unless the WiFi library is explicitly declared here.
+    if not CORE.using_esp_idf:
+        cg.add_library("WiFi", None)
+
     cg.add(var.set_psk(config[CONF_PSK]))
     cg.add(var.set_mode(config[CONF_MODE]))
     cg.add(var.set_channel(config[CONF_CHANNEL]))
