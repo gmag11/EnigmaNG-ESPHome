@@ -88,10 +88,15 @@ async def to_code(config):
     cg.add_define("USE_ENIGMANG")
 
     # Required sdkconfig options for EnigmaNG:
-    # - DHCPS: used by Arduino NetworkInterface (esp_netif_dhcps_*)
     # - HKDF: used by Crypto::hkdf (mbedtls_hkdf)
-    add_idf_sdkconfig_option("CONFIG_LWIP_DHCPS", True)
     add_idf_sdkconfig_option("CONFIG_MBEDTLS_HKDF_C", True)
+
+    # Note: CONFIG_LWIP_DHCPS must be kept enabled via esp32.framework.advanced.
+    # enable_lwip_dhcp_server: true in the user YAML. The Arduino WiFi library
+    # (required for ESP-NOW) references esp_netif_dhcps_* at link time even
+    # though EnigmaNG never uses the DHCP server. ESPHome's esp32 component
+    # overrides any add_idf_sdkconfig_option call for LWIP_DHCPS, so it must
+    # be controlled through the framework advanced config.
 
     # WiFi is a bundled Arduino ESP32 framework library needed by MeshNetwork.h
     # It is not pulled in automatically because we CONFLICT with the wifi component.
